@@ -49,14 +49,36 @@ Flight::route('', function() {
     Flight::render('accueil');
 });
 
-Flight::route('/jeu', function(){
+Flight::route('GET /map', function(){
 
     # Reconnexion à la base de donnée
-    $link = Flight::get('db');
+    $pdo = Flight::get('db');
 
     # Récupération des objets de la bdd
     
-    # Redirection vers le fichier jeu.php en incluant la table des objets
+    # Redirection vers le fichier map.php en incluant la table des objets
+    # Le fichier javascript associé à ce fichier renverra vers la route ci-desous pour récupérer les informations des 
+    # objets nécessaires
+});
+
+Flight::route('GET /api/objets', function(){
+
+    if (isset($_GET['id']) && !empty($_GET['id'])) {
+        // Requête pour récupérer l'objet sélectionné
+        $sql = "SELECT Objet_nom FROM objets WHERE id=$_GET['id']";
+    }
+    else{
+        // Requête pour récupérer tous les objets pour commencer le jeu
+        $sql = "SELECT Objet_nom FROM objets WHERE Objet_nom='poème' OR Objet_nom='carte_postale' OR Objet_nom='coffre' OR Objet_nom='statue'";
+    }
+
+    // Exécution de la requête
+    $stmt = $pdo->prepare($sql);
+    $stmt->execute();
+    // Récupération des résultats
+    $Objets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    // Renvoie dans la console les objets sélectionnés sous format JSON
 });
 
 

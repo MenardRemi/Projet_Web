@@ -8,7 +8,7 @@
 </head>
 <body>
     <h1>La quête du disque volé</h1>
-    <a href="/jeu" class="btn btn-primary">Jouer</a>
+    <a href="/map" class="btn btn-primary">Jouer</a>
     <h2>Hall of fame</h2>
     <tbody>
         <?php foreach ($meilleursScores as $score): ?>
