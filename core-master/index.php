@@ -6,6 +6,7 @@ session_start();
 
 
 Flight::route('', function() {
+    # Connexion au serveur
     $host = 'localhost'; // Adresse du serveur PostgreSQL
     $dbname = 'postgres'; // Nom de la base de données
     $user = 'postgres'; // Nom d'utilisateur PostgreSQL
@@ -19,9 +20,16 @@ Flight::route('', function() {
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
         echo "Connexion réussie à PostgreSQL !";
+
+        # Enregistrement du lien à la BDD
+        Flight::set('db', $pdo);
+
     } catch (PDOException $e) {
         echo "Erreur de connexion : " . $e->getMessage();
     }
+
+
+
 
     // Requête pour récupérer les 10 meilleurs scores
     $sql = "SELECT joueur, temps FROM scores ORDER BY temps DESC LIMIT 10";
@@ -38,12 +46,20 @@ Flight::route('', function() {
     }
 
     Flight::render('accueil', ['meilleursScores' => $meilleursScores]);
+    Flight::render('accueil');
 });
 
 Flight::route('/jeu', function(){
+
+    # Reconnexion à la base de donnée
+    $link = Flight::get('db');
+
     # Récupération des objets de la bdd
+    
     # Redirection vers le fichier jeu.php en incluant la table des objets
 });
+
+
 
 Flight::start();
 ?>
