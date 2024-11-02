@@ -7,7 +7,10 @@ require 'flight/Flight.php';
 session_start();
 
 
+Flight::route('', function() {
 
+    Flight::render('accueil');
+});
 
 Flight::start();
 ?>
