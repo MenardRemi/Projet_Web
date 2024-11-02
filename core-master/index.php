@@ -10,7 +10,7 @@ Flight::route('', function() {
     $host = 'localhost'; // Adresse du serveur PostgreSQL
     $dbname = 'postgres'; // Nom de la base de données
     $user = 'postgres'; // Nom d'utilisateur PostgreSQL
-    $password = 'md5'; // Mot de passe PostgreSQL
+    $password = 'postgres'; // Mot de passe PostgreSQL
 
     try {
         // Création de la connexion PDO
