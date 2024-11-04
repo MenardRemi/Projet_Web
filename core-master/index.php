@@ -1,13 +1,60 @@
 <?php
 
 declare(strict_types=1);
-require 'flight/Flight.php';
+require_once 'flight/Flight.php';
 session_start();
 
 
-Flight::route('', function() {
+Flight::route('GET /', function() {
+
+
+    $host = 'localhost';
+    $port = '5433'; // Assure-toi que le port est correct
+    $dbname = 'postgres';
+    $user = 'postgres';
+    $password = 'postgres'; // Assure-toi que ce mot de passe est le bon
+
+    // Chaîne de connexion
+    $conn_string = "host=$host port=$port dbname=$dbname user=$user password=$password";
+
+    // Création de la connexion
+    $dbconn = pg_connect($conn_string);
+
+    // Vérification de la connexion
+    if (!$dbconn) {
+        echo "Erreur de connexion à la base de données.";
+    } else {
+        echo "Connexion réussie à la base de données PostgreSQL!";
+
+        /*if ($result) {
+            // Parcours des résultats
+            while ($row = pg_fetch_assoc($result)) {
+                echo "<br>" . "nom: " . $row['nom'] . "<br>";
+            }
+        } else {
+            echo "Erreur lors de la récupération des données.";
+        }*/
+
+        // Requête pour récupérer les 10 meilleurs scores
+        $sql = "SELECT nom, temps FROM score ORDER BY temps LIMIT 10";
+        
+        // Exécution de la requête
+        $result = pg_query($dbconn, $sql);
+
+        // Récupération des résultats
+        
+        if ($result) {
+            Flight::render('accueil', ['meilleursScores' => $result]);
+        } else {
+            echo "Erreur lors de la récupération des données.";
+        }
+    }
+
+
+    pg_close($dbconn);
+
     # Connexion au serveur
-    $host = 'localhost'; // Adresse du serveur PostgreSQL
+    /*$host = 'localhost'; // Adresse du serveur PostgreSQL
     $dbname = 'postgres'; // Nom de la base de données
     $user = 'postgres'; // Nom d'utilisateur PostgreSQL
     $password = 'postgres'; // Mot de passe PostgreSQL
@@ -28,28 +75,11 @@ Flight::route('', function() {
         echo "Erreur de connexion : " . $e->getMessage();
     }
 
-
-
-
-    // Requête pour récupérer les 10 meilleurs scores
-    $sql = "SELECT joueur, temps FROM scores ORDER BY temps DESC LIMIT 10";
-    
-    // Exécution de la requête
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-
-    // Récupération des résultats
-    $meilleursScores = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-    catch (PDOException $e) {
-    echo "Erreur : " . $e->getMessage();
-    }
-
-    Flight::render('accueil', ['meilleursScores' => $meilleursScores]);
-    Flight::render('accueil');
+    */
+    //Flight::render('accueil_2');
 });
 
-Flight::route('GET /map', function(){
+/*Flight::route('GET /map', function(){
 
     # Reconnexion à la base de donnée
     $pdo = Flight::get('db');
@@ -82,7 +112,7 @@ Flight::route('GET /api/objets', function(){
 });
 
 
-
+*/
 Flight::start();
 ?>
 

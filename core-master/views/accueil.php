@@ -10,13 +10,11 @@
     <h1>La quête du disque volé</h1>
     <a href="/map" class="btn btn-primary">Jouer</a>
     <h2>Hall of fame</h2>
-    <tbody>
-        <?php foreach ($meilleursScores as $score): ?>
-            <tr>
-                <td><?= htmlspecialchars($score['joueur']); ?></td>
-                <td><?= htmlspecialchars($score['temps']); ?></td>
-            </tr>
-        <?php endforeach; ?>
-    </tbody>
+    <ul>
+        <?php 
+        while ($row = pg_fetch_assoc($meilleursScores)) {
+                ?> <li><?php echo htmlspecialchars($row['nom']) . " : " . htmlspecialchars($row['temps']); ?></li>
+        <?php } ?>
+    </ul>
 </body>
 </html>
