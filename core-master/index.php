@@ -89,30 +89,68 @@ Flight::route('GET /', function() {
     # Redirection vers le fichier map.php en incluant la table des objets
     # Le fichier javascript associé à ce fichier renverra vers la route ci-desous pour récupérer les informations des 
     # objets nécessaires
+});*/
+
+Flight::route('GET /map', function() {
+    Flight::render('test_carte');
 });
 
-Flight::route('GET /api/objets', function(){
+Flight::route('GET /api/objets', function() {
+    $host = 'localhost';
+    $port = '5433';
+    $dbname = 'postgres';
+    $user = 'postgres';
+    $password = 'postgres';
+
+    // Chaîne de connexion
+    $conn_string = "host=$host port=$port dbname=$dbname user=$user password=$password";
+
+    // Création de la connexion
+    $dbconn = pg_connect($conn_string);
+
+    if (!$dbconn) {
+        echo json_encode(["error" => "Erreur de connexion à la base de données"]);
+        return;
+    }
+
 
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         // Requête pour récupérer l'objet sélectionné
-        $sql = "SELECT Objet_nom FROM objets WHERE id=$_GET['id']";
-    }
-    else{
+        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 4326)::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte FROM objets WHERE id=" . pg_escape_string($_GET['id']);
+    } else {
         // Requête pour récupérer tous les objets pour commencer le jeu
-        $sql = "SELECT Objet_nom FROM objets WHERE Objet_nom='poème' OR Objet_nom='carte_postale' OR Objet_nom='coffre' OR Objet_nom='statue'";
+        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 4326)::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte FROM objets WHERE Objet_nom IN ('poème', 'carte_postale', 'coffre_ferme', 'coffre_ouvert', 'statue')";
     }
 
     // Exécution de la requête
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute();
-    // Récupération des résultats
-    $Objets = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = pg_query($dbconn, $sql);
 
-    // Renvoie dans la console les objets sélectionnés sous format JSON
+    if ($result) {
+        // Conversion des résultats en format JSON
+        $objets = [];
+        while ($row = pg_fetch_assoc($result)) {
+
+            $objets[] = $row;
+        }
+        //Transmission des données JSON
+        echo json_encode($objets);
+        $objets = json_encode($objets);
+        
+
+    } else {
+        echo json_encode(["error" => "Erreur lors de la récupération des données"]);
+    }
+
+    
+
+
+    // Fermer la connexion
+    pg_close($dbconn);
 });
 
 
-*/
+
+
 Flight::start();
 ?>
 
