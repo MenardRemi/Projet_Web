@@ -9,7 +9,7 @@ Flight::route('GET /', function() {
 
 
     $host = 'localhost';
-    $port = '5433'; // Assure-toi que le port est correct
+    $port = '5433';
     $dbname = 'postgres';
     $user = 'postgres';
     $password = 'postgres'; // Assure-toi que ce mot de passe est le bon
@@ -92,7 +92,7 @@ Flight::route('GET /', function() {
 });*/
 
 Flight::route('GET /map', function() {
-    Flight::render('test_carte');
+    Flight::render('jeu');
 });
 
 Flight::route('GET /api/objets', function() {
@@ -116,10 +116,10 @@ Flight::route('GET /api/objets', function() {
 
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         // Requête pour récupérer l'objet sélectionné
-        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 4326)::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte FROM objets WHERE id=" . pg_escape_string($_GET['id']);
+        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 4326)::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
     } else {
         // Requête pour récupérer tous les objets pour commencer le jeu
-        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 4326)::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte FROM objets WHERE Objet_nom IN ('poème', 'carte_postale', 'coffre_ferme', 'coffre_ouvert', 'statue')";
+        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 4326)::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets";
     }
 
     // Exécution de la requête
