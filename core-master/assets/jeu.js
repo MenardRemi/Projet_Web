@@ -56,7 +56,11 @@ Vue.createApp({
             Inventory: [],
             markers : [],
             selectedItem : null,
-            
+
+//NOUVEAU SCORE
+            startTime : null,
+            stopTime : null,
+            score : null,
         };
     },
 
@@ -73,12 +77,11 @@ Vue.createApp({
                 popupAnchor: [0, -50] // Ancrage du popup
             });
 
-//NOUVEAU   
-            if (this.zoom(image)) {
+
             var marker = L.marker(image.position, { icon: imageIcon }).addTo(this.featureGroup);
             this.markers.push(marker);
 
-            this.zoom(marker, image);
+            
             marker.addTo(this.featureGroup);
 
             marker.on('click', () => {
@@ -104,11 +107,11 @@ Vue.createApp({
 
 //NOUVEAU
                 this.unlockObjectOnMap(image);
-            });};
+            });
             
         },
 
-//NOUVEAU
+        /*
         zoom(image) {
             const currentZoom = this.map.getZoom();
             console.log(`Niveau de zoom actuel : ${currentZoom}`);
@@ -124,12 +127,27 @@ Vue.createApp({
             };
             
         },
-
+*/
 
             addImageToInventory(image) {
                 this.Inventory.push(image); // rajouter les images dans l'inventaire
                 image.remove = true;
                 //console.log(image.remove);
+
+//NOUVEAU SCORE
+                //Vérifier si le disque est dans l'inventiare alors fin de jeu
+                const existsInInventory = this.Inventory.some(image => image.objet === "disque");
+
+                if (existsInInventory) {
+                    //console.log("L'objet 'disque' est présent dans l'inventaire.");
+                    this.stopTime = Date.now();
+                    this.score = (this.stopTime - this.startTime);
+                    //console.log(this.startTime, this.stopTime);
+                    //console.log(score);
+                    alert("score :" + this.score);
+                } else {
+                    console.log("L'objet 'disque' n'est pas présent dans l'inventaire.");
+                }
                 
             },
 
@@ -261,18 +279,19 @@ Vue.createApp({
 },
 
     mounted() {
-        
+
+//NOUVEAU SCORE
+        this.startTime = Date.now();
+
+
         this.map = L.map('map').setView([-43.277614, -22.776993], 1);
         this.featureGroup = L.featureGroup().addTo(this.map);
         
-
-
         L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(this.map);
 
 //NOUVEAU
-        this.map.on('zoomend', this.zoom);
         this.afficherImage(this.images[0]);
 
     },

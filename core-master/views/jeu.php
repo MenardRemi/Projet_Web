@@ -26,11 +26,8 @@
         </div>
 
 
-        
-
         <div class="inventory">
-            <h1>Inventaire</h1>
-            
+            <h1>Inventaire</h1>        
             <ul>
                 <li v-for="(image, index) in Inventory" :key="index">
                     <img 
