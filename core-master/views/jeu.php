@@ -16,6 +16,11 @@
 <div class="title">La Quête du Disque Volé</div>
 
 <div id = 'vue_app' class="app-container">
+    <!-- Chronomètre -->
+        <div class="chrono-container">
+            <h4>Chronomètre</h4>
+            <div id="chrono">{{ formattedTime }}</div>
+        </div>
 
         <div class="map-container">
             <div id = 'map'
@@ -40,6 +45,7 @@
             </ul>
             
         </div>
+        
 
         
 

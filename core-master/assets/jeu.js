@@ -6,7 +6,18 @@ Vue.createApp({
             markers: [], // Marqueurs associés aux objets
             Inventory: [], // Inventaire des objets récupérés
             selectedItem: null, // Élément sélectionné dans l'inventaire
+            timer: null, // Référence au setInterval
+            elapsedTime: 0, // Temps écoulé en secondes
         };
+    },
+    computed: {
+        // Formater le temps écoulé en HH:MM:SS
+        formattedTime() {
+            const hours = String(Math.floor(this.elapsedTime / 3600)).padStart(2, '0');
+            const minutes = String(Math.floor((this.elapsedTime % 3600) / 60)).padStart(2, '0');
+            const seconds = String(this.elapsedTime % 60).padStart(2, '0');
+            return `${hours}:${minutes}:${seconds}`;
+        },
     },
     methods: {
         // Initialiser la carte Leaflet
@@ -90,7 +101,12 @@ Vue.createApp({
         addImageToInventory(image) {
             this.Inventory.push(image);
             image.remove = "t"; // Marque l'objet comme supprimé
-            this.unlockObjectOnMap(image); // Débloque les objets liés
+            if (image.objet_nom != "piece"){
+                this.unlockObjectOnMap(image); // Débloque les objets liés
+            }
+            else{
+                this.checkZoomAndDisplayObjects();
+            }
         },
 
         // Retirer un objet de l'inventaire
@@ -99,6 +115,7 @@ Vue.createApp({
             if (index !== -1) {
                 this.Inventory.splice(index, 1);
             }
+            this.checkZoomAndDisplayObjects();
         },
 
         // Demander un code pour débloquer un objet
@@ -117,7 +134,7 @@ Vue.createApp({
         unlockObjectOnMap(image) {
             const ObjetsBloques = this.objets.filter(obj => obj.bloque === image.id);
             ObjetsBloques.forEach(bloque => {
-                console.log("bloqueeeeeeeee");
+                console.log("bloqueeeeeeeee", image.id);
                 bloque.remove = "f";
             })
             this.checkZoomAndDisplayObjects();
@@ -127,31 +144,31 @@ Vue.createApp({
         checkZoomAndDisplayObjects() {
             const currentZoom = this.map.getZoom();
             //const currentZoom = this.featureGroup.getZoom();
-            console.log()
 
             this.markers.forEach(({ marker, image }) => {
-                console.log("valeur remove :", image.remove);
+                //console.log("valeur remove :", image.remove);
                 if (marker && image){
-                    console.log(image.objet_nom, image.zoom, image.remove);
                     if (currentZoom >= image.zoom && image.remove == "f") { // Bon niveau de zoom + pas supprimé de la carte
-                        console.log("zoom OKKKKKKKKKK");
-                        console.log(this.featureGroup.hasLayer(marker));
                         //marker.addTo(this.featureGroup);
                         if (!this.featureGroup.hasLayer(marker)) {
-                            console.log(`Ajout du marqueur pour : ${image.objet_nom}`);
+                            //console.log(`Ajout du marqueur pour : ${image.objet_nom}`);
                             this.featureGroup.addLayer(marker);
                             //this.featureGroup.addLayer(marker);
                         }
                     } else { // pas bon niveau de zoom ou à supprimer de la carte
-                        console.log("zoom pas ok ou à supp de la carte");
-                        console.log(this.featureGroup.hasLayer(marker));
+                        //console.log("zoom pas ok ou à supp de la carte");
                         if (this.featureGroup.hasLayer(marker)) {
-                            console.log(`Retrait du marqueur pour : ${image.objet_nom}`);
+                            //console.log(`Retrait du marqueur pour : ${image.objet_nom}`);
                             //marker.remove(this.featureGroup);
                             this.featureGroup.removeLayer(marker);
                             //this.featureGroup.removeLayer(marker);
                         }
                     }
+                }
+            });
+            this.Inventory.forEach((image) => {
+                if (image.objet_nom === "disque"){
+                    alert(`Vous avez trouvé le disque ! Temps total : ${this.formattedTime}`);
                 }
             });
         },
@@ -179,13 +196,20 @@ Vue.createApp({
             const dropX = event.clientX;
             const dropY = event.clientY;
 
-            const targetImage = this.objets.find(image => image.bloque === this.selectedItem.objet);
+            const targetImage = this.objets.find(image => image.bloque === this.selectedItem.id);
+            console.log(targetImage);
             if (targetImage) {
                 const targetPoint = this.map.latLngToContainerPoint(
                     L.latLng(targetImage.latitude, targetImage.longitude)
                 );
 
-                const tolerance = 50;
+                const tolerance = 300;
+                console.log((
+                    dropX >= targetPoint.x - tolerance &&
+                    dropX <= targetPoint.x + tolerance &&
+                    dropY >= targetPoint.y - tolerance &&
+                    dropY <= targetPoint.y + tolerance
+                ));
                 if (
                     dropX >= targetPoint.x - tolerance &&
                     dropX <= targetPoint.x + tolerance &&
@@ -194,11 +218,28 @@ Vue.createApp({
                 ) {
                     this.unlockObjectOnMap(this.selectedItem);
                     this.removeImageFromInventory(this.selectedItem);
-                }
+                    this.stopChrono();
+                    this.checkZoomAndDisplayObjects;
+                } 
             }
+        },
+        // Initialiser le chronomètre
+        startChrono() {
+            if (!this.timer) {
+                this.timer = setInterval(() => {
+                    this.elapsedTime++;
+                }, 1000);
+            }
+        },
+        // Arrêter le chronomètre
+        stopChrono() {
+            clearInterval(this.timer);
+            //appel fonction pour ajouter le timeur au tableur score
+            this.timer = null;
         },
     },
     mounted() {
         this.initMap();
+        this.startChrono();
     },
 }).mount('#vue_app');
