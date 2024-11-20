@@ -22,12 +22,22 @@
             <div id = 'map'
                 @dragover.prevent
                 @drop="Drop($event)">
+
             </div> 
+
+<!-- Nouveau texte -->  
+            <div class="text-box" v-if="showTextBox">
+            <p>{{ afficherText}}</p>
+            <button @click="hideMessage">Fermer</button>
+            </div>
+
         </div>
+            
+
 
 
         <div class="inventory">
-            <h1>Inventaire</h1>        
+            <h1>Inventaire</h1>   
             <ul>
                 <li v-for="(image, index) in Inventory" :key="index">
                     <img 

@@ -23,13 +23,13 @@ Vue.createApp({
     data() {
         return {
             images: [ //objets de Rémi
-            {objet : 'Remi', position :[-51.210461, 46.812867], zoom :'2',icone : 'image/remi.jpg',  recuperable : false, text : 'Tu dois m’aider à retrouver ce disque ! Ma future vie de DJ en dépend…', code : '', bloque: '', remove:false},
-            {objet : 'Diego', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/diego.jpg',  recuperable : false, text : '', code : '', bloque: 'Remi', remove:false},
-            {objet : 'Mael', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/mael.jpg',  recuperable : false, text : '', code : '', bloque: 'Remi', remove:false},
-            {objet : 'Laura-lee', position :[-31.210461, 46.812867], zoom :'5',icone : 'image/lauralee.jpg',  recuperable : false, text : 'Je sais pas pourquoi mais ces derniers jours Karine n’arrêtait pas de me parler d’un voyage vers la terre de glace et de feu', code : '', bloque: 'Remi', remove:false},
-            {objet : 'Seb', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/seb.jpg',  recuperable : false, text : 'j’ai vu Karine quitter l’école avec un objet doré dans son sac', code : '', bloque: 'Remi', remove:false},
-            {objet : 'Celia', position :[-71.210461, 86.812867], zoom :'14',icone : 'image/celia.jpg',  recuperable : false, text : '', code : '', bloque: 'Remi', remove:false},
-            {objet : 'Clara', position :[-71.210461, 56.812867], zoom :'14',icone : 'image/canettes.jpg',  recuperable : false, text : 'Cherche un peu dans la ville', code : '', bloque: '', remove:false},
+            {objet : 'Remi', position :[-51.210461, 46.812867], zoom :'2',icone : 'image/remi.jpg',  recuperable : false, text : 'Tu dois m’aider à retrouver ce disque ! Ma future vie de DJ en dépend…', code : '', bloque: '', remove:false, showTexte : false},
+            {objet : 'Diego', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/diego.jpg',  recuperable : false, text : '', code : '', bloque: 'Remi', remove:false, showTexte : false},
+            {objet : 'Mael', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/mael.jpg',  recuperable : false, text : '', code : '', bloque: 'Remi', remove:false, showTexte : false},
+            {objet : 'Laura-lee', position :[-31.210461, 46.812867], zoom :'5',icone : 'image/lauralee.jpg',  recuperable : false, text : 'Je sais pas pourquoi mais ces derniers jours Karine n’arrêtait pas de me parler d’un voyage vers la terre de glace et de feu', code : '', bloque: 'Remi', remove:false, showTexte : false},
+            {objet : 'Seb', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/seb.jpg',  recuperable : false, text : 'j’ai vu Karine quitter l’école avec un objet doré dans son sac', code : '', bloque: 'Remi', remove:false, showTexte : false},
+            {objet : 'Celia', position :[-71.210461, 86.812867], zoom :'14',icone : 'image/celia.jpg',  recuperable : false, text : '', code : '', bloque: 'Remi', remove:false, showTexte : false},
+            {objet : 'Clara', position :[-71.210461, 56.812867], zoom :'14',icone : 'image/canettes.jpg',  recuperable : false, text : 'Cherche un peu dans la ville', code : '', bloque: '', remove:false, showTexte : false},
             {objet : 'poeme', position :[-61.210461, 48.812867], zoom :'5',icone : 'image/lettre.png',  recuperable : false, text : `À l'est des montagnes et au bord de la mer,
                                                                                                                                 Se trouve une ville où le sirop d'érable est fier.
                                                                                                                                 Cherche le plus vieux quartier, pavé et charmant,
@@ -39,17 +39,17 @@ Vue.createApp({
                                                                                                                                 Et si tu cherches bien, une coïncidence se dévoile,
                                                                                                                                 Car ton nom est le même que la région où tu travailles.
                                                                                                                                 Trouve cette ville historique, où l'hiver est festif,
-                                                                                                                                Et tu découvriras une carte postale, en souvenir d'un récit !`, code : '', bloque: 'Laura-lee', remove:false},
-            {objet : 'canettes', position :[-71.210461, 47.812867], zoom :'14',icone : 'image/canettes.png',  recuperable : false, text : '', code : '', bloque: 'Laura-lee', remove:false},
-            {objet : 'dechets', position :[-71.210461, 49.812867], zoom :'14',icone : 'image/dechets.png',  recuperable : false, text : '', code : '', bloque: 'Laura-lee', remove:false},
-            {objet : 'carte postale', position :[-43.277614, -22.776993], zoom :'15', icone : 'image/carte_postale.png', recuperable : true, text : '', code : '', bloque:'poeme', remove:false},
-            {objet : 'Jules', position :[-91.210461, 46.812867], zoom :'14',icone : 'image/jule.jpg',  recuperable : false, text : 'Va voir sur les rives de Rio', code : '', bloque: 'carte postale', remove:false},
-            {objet : 'coffre ferme', position :[-22.776993, -43.211614], zoom :'5', icone : 'image/coffre_ferme.png', recuperable : false, text : '', code :'1213', bloque: 'carte postale', remove:false},
-            {objet : 'coffre ouverte', position :[-22.776993, -43.211614], zoom :'5', icone : 'image/coffre_ouverte.png', recuperable : false, text : '', code :'', bloque: 'coffre ferme', remove:true},
-            {objet : 'piece', position :[-22.776993, -43.211614], zoom :'5', icone : 'image/piece.png', recuperable : true, text : '', code :'', bloque: 'coffre ferme', remove:true},
-            {objet : 'Romain', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/romain.jpg',  recuperable : false, text : 'Tu peux faire un voeux au près de la fontaine en lançant une pièce dessus', code : '', bloque: 'coffre ouverte', remove:false},
-            {objet : 'fontaine du mont fuji', position :[2.587624, 48.84139], zoom :'5', icone : 'image/fontaine_mont_fuji.png', recuperable : false, text : '', code :'', bloque: 'piece', remove:false},
-            {objet : 'disque', position :[2.587624, 48.84139], zoom :'5', icone : 'image/disque.png', recuperable : true, text : '', code :'', bloque:'fontaine du mont fuji', remove:true},
+                                                                                                                                Et tu découvriras une carte postale, en souvenir d'un récit !`, code : '', bloque: 'Laura-lee', remove:false, showTexte : false},
+            {objet : 'canettes', position :[-71.210461, 47.812867], zoom :'14',icone : 'image/canettes.png',  recuperable : false, text : '', code : '', bloque: 'Laura-lee', remove:false, showTexte : false},
+            {objet : 'dechets', position :[-71.210461, 49.812867], zoom :'14',icone : 'image/dechets.png',  recuperable : false, text : '', code : '', bloque: 'Laura-lee', remove:false, showTexte : false},
+            {objet : 'carte postale', position :[-43.277614, -22.776993], zoom :'15', icone : 'image/carte_postale.png', recuperable : true, text : '', code : '', bloque:'poeme', remove:false, showTexte : false},
+            {objet : 'Jules', position :[-91.210461, 46.812867], zoom :'14',icone : 'image/jule.jpg',  recuperable : false, text : 'Va voir sur les rives de Rio', code : '', bloque: 'carte postale', remove:false, showTexte : false},
+            {objet : 'coffre ferme', position :[-22.776993, -43.211614], zoom :'5', icone : 'image/coffre_ferme.png', recuperable : false, text : '', code :'1213', bloque: 'carte postale', remove:false, showTexte : false},
+            {objet : 'coffre ouverte', position :[-22.776993, -43.211614], zoom :'5', icone : 'image/coffre_ouverte.png', recuperable : false, text : '', code :'', bloque: 'coffre ferme', remove:true, showTexte : false},
+            {objet : 'piece', position :[-22.776993, -43.211614], zoom :'5', icone : 'image/piece.png', recuperable : true, text : '', code :'', bloque: 'coffre ferme', remove:true, showTexte : false},
+            {objet : 'Romain', position :[-71.210461, 46.812867], zoom :'14',icone : 'image/romain.jpg',  recuperable : false, text : 'Tu peux faire un voeux au près de la fontaine en lançant une pièce dessus', code : '', bloque: 'coffre ouverte', remove:false, showTexte : false},
+            {objet : 'fontaine du mont fuji', position :[2.587624, 48.84139], zoom :'5', icone : 'image/fontaine_mont_fuji.png', recuperable : false, text : '', code :'', bloque: 'piece', remove:false, showTexte : false},
+            {objet : 'disque', position :[2.587624, 48.84139], zoom :'5', icone : 'image/disque.png', recuperable : true, text : '', code :'', bloque:'fontaine du mont fuji', remove:true, showTexte : false},
     
         ],
             
@@ -62,6 +62,14 @@ Vue.createApp({
             stopTime : null,
             score : null,
         };
+    },
+
+//NOUVEAU TEXTE
+    computed : {
+
+        afficherText() {
+            return this.selectedItem?.text;
+        },
     },
 
  
@@ -89,7 +97,7 @@ Vue.createApp({
                 if (image.recuperable) { // si l'objet est récupérable on le récupère et on le met dans l'inventaire
                     this.selectedImageSrc = image.icone;
                     this.addImageToInventory(image);
-//NOUVEAU
+
                     marker.remove();
                 };
 
@@ -98,18 +106,34 @@ Vue.createApp({
                 };
 
 
-// NOUVEAU
+// NOUVEAU TEXTE
                 if (image.text) {// si y'a un texte on l'affiche
-                    marker.bindPopup(image.text).openPopup(); //afficher le texte
-                    console.log(image.objet);
+                    this.selectedItem = image;
+                    this.selectedItem.showText = true;
+                    console.log(this.selectedItem.showText);
 
                     };
 
-//NOUVEAU
+
                 this.unlockObjectOnMap(image);
             });
-            
+        
         },
+
+        showTextBox() {
+            if (this.selectedItem) {
+                return true;
+            } else {
+                return false;
+            };
+
+        },
+
+        hideMessage() {
+            this.selectedItem = null; // Enlever le texte
+          },
+
+
 
         /*
         zoom(image) {
