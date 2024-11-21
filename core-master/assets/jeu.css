@@ -23,7 +23,7 @@ body {
     margin-top: 20px;
     text-align: center;
     font-weight: bold;
-    color: #333;
+    color: #ffffff;
     }
 
 /* Conteneur de la carte */
@@ -52,6 +52,7 @@ body {
             max-width: 250px; /* Limite de largeur maximale */
             min-width: 100px; /* Limite de largeur minimale */
             background-color: #9c9700;
+            color: #ffffff;
             margin-top: 10px;
             height: 100%; /* Pour correspondre à la hauteur de la carte */
             display: flex;
@@ -73,4 +74,8 @@ body {
         margin-top: 20px;
         text-align: center;
         font-size: 1.5em;
+    }
+
+    .victoire{
+        width: 50px;
     }

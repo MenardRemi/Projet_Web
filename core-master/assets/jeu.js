@@ -8,6 +8,7 @@ Vue.createApp({
             selectedItem: null, // Élément sélectionné dans l'inventaire
             timer: null, // Référence au setInterval
             elapsedTime: 0, // Temps écoulé en secondes
+            gagne:false,
         };
     },
     computed: {
@@ -216,10 +217,13 @@ Vue.createApp({
                     dropY >= targetPoint.y - tolerance &&
                     dropY <= targetPoint.y + tolerance
                 ) {
+                    // Pièce bien positionné donc disque trouvé !
                     this.unlockObjectOnMap(this.selectedItem);
                     this.removeImageFromInventory(this.selectedItem);
                     this.stopChrono();
                     this.checkZoomAndDisplayObjects;
+                    this.gagne=true;
+                    this.sendScore();
                 } 
             }
         },
@@ -236,6 +240,26 @@ Vue.createApp({
             clearInterval(this.timer);
             //appel fonction pour ajouter le timeur au tableur score
             this.timer = null;
+        },
+        sendScore() {
+            fetch('http://localhost:8888/ajoutscore', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    temps: this.formattedTime, // Temps à envoyer
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.success);
+                } else {
+                    alert(data.error);
+                }
+            })
+            .catch(error => console.error('Erreur lors de l\'envoi du score:', error));
         },
     },
     mounted() {

@@ -4,27 +4,41 @@ declare(strict_types=1);
 require_once 'flight/Flight.php';
 session_start();
 
+$host = 'localhost';
+$port = '5433';
+$dbname = 'postgres';
+$user = 'postgres';
+$password = 'postgres';
 
-Flight::route('GET /', function() {
+// Chaîne de connexion
+$conn_string = "host=$host port=$port dbname=$dbname user=$user password=$password";
+
+// Création de la connexion
+$conn = pg_connect($conn_string);
+
+if (!$conn){
+    exit("Erreur");
+}
+else{
+
+}
+
+session_start();
+
+Flight::set('conn', $conn);
+
+Flight::route('GET /accueil', function() use ($conn) {
 
 
-    $host = 'localhost';
-    $port = '5433';
-    $dbname = 'postgres';
-    $user = 'postgres';
-    $password = 'postgres'; // Assure-toi que ce mot de passe est le bon
+    
 
-    // Chaîne de connexion
-    $conn_string = "host=$host port=$port dbname=$dbname user=$user password=$password";
 
-    // Création de la connexion
-    $dbconn = pg_connect($conn_string);
 
     // Vérification de la connexion
-    if (!$dbconn) {
+    if (!$conn) {
         echo "Erreur de connexion à la base de données.";
     } else {
-        echo "Connexion réussie à la base de données PostgreSQL!";
+        
 
         /*if ($result) {
             // Parcours des résultats
@@ -39,7 +53,7 @@ Flight::route('GET /', function() {
         $sql = "SELECT nom, temps FROM score ORDER BY temps LIMIT 10";
         
         // Exécution de la requête
-        $result = pg_query($dbconn, $sql);
+        $result = pg_query($conn, $sql);
 
         // Récupération des résultats
         
@@ -51,7 +65,7 @@ Flight::route('GET /', function() {
     }
 
 
-    pg_close($dbconn);
+
 
     # Connexion au serveur
     /*$host = 'localhost'; // Adresse du serveur PostgreSQL
@@ -95,20 +109,18 @@ Flight::route('GET /map', function() {
     Flight::render('jeu');
 });
 
-Flight::route('GET /api/objets', function() {
-    $host = 'localhost';
+Flight::route('GET /api/objets', function() use ($conn) {
+    /*$host = 'localhost';
     $port = '5433';
     $dbname = 'postgres';
     $user = 'postgres';
     $password = 'postgres';
 
     // Chaîne de connexion
-    $conn_string = "host=$host port=$port dbname=$dbname user=$user password=$password";
+    $conn_string = "host=$host port=$port dbname=$dbname user=$user password=$password";*/
 
-    // Création de la connexion
-    $dbconn = pg_connect($conn_string);
 
-    if (!$dbconn) {
+    if (!$conn) {
         echo json_encode(["error" => "Erreur de connexion à la base de données"]);
         return;
     }
@@ -127,7 +139,7 @@ Flight::route('GET /api/objets', function() {
     }
 
     // Exécution de la requête
-    $result = pg_query($dbconn, $sql);
+    $result = pg_query($conn, $sql);
 
     if ($result) {
         // Conversion des résultats en format JSON
@@ -148,13 +160,82 @@ Flight::route('GET /api/objets', function() {
     
 
 
-    // Fermer la connexion
-    pg_close($dbconn);
 });
 
 
+Flight::route('GET /login', function () {
+    Flight::render('login', ['user' => $_SESSION]);
 
+});
 
+Flight::route('POST /login', function () {
+    if (isset($_POST['user']) and !empty($_POST['user'])) {
+        $_SESSION['user'] = $_POST['user'];
+        Flight::render('jeu', ['user' => $_SESSION]);} // si le nom d'utilisateur est entrée alors ouvre le jeu
+        else{
+            Flight::render('login', ['user' => $_SESSION]);
+        }
+});
+
+Flight::route('/logout', function () {
+    $_SESSION = [];
+    Flight::render('login', ['user' => $_SESSION]);
+
+});
+
+Flight::route('POST /ajoutscore', function () use ($conn){
+
+    if (!$conn) {
+        echo json_encode(["error" => "Erreur de connexion à la base de données"]);
+        return;
+    }
+    /*if (isset($_POST['user']) and !empty($_POST['user'])) {
+        if (isset($_POST['temps']) and !empty($_POST['temps'])) {
+            $sql = "INSERT INTO score (nom, temps) VALUES ($_POST['user'], $_POST['temps']);";
+        }
+    
+    }
+    // Exécution de la requête
+    $result = pg_query($conn, $sql);
+    if (!$result){
+        echo "erreur lors de l'ajout du chrono du joueur $_POST['user']";
+    }*/
+
+    // Vérifier si un utilisateur est connecté
+    if (isset($_SESSION['user']) && !empty($_SESSION['user'])) {
+        $user = pg_escape_string($conn, $_SESSION['user']);
+
+        // Vérifier si le temps est fourni
+        if (isset($_POST['temps']) && !empty($_POST['temps'])) {
+            $temps = isset($_POST['temps']) ? $_POST['temps'] : null;
+
+            // Valider le format du temps (HH:MM:SS)
+            if ($_POST['temps'] === null || !preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/', $temps)) {
+                echo json_encode(["error" => "Format de temps invalide. Utilisez HH:MM:SS."]);
+                return;
+            }
+
+            // Échappement pour protéger contre les injections SQL
+            $temps = pg_escape_string($conn, $_POST['temps']);
+            
+            // Préparer et exécuter la requête d'insertion
+            $sql = "INSERT INTO score (nom, temps) VALUES ('$user', '$temps')";
+            $result = pg_query($conn, $sql);
+
+            if ($result) {
+                echo json_encode(["success" => "Score ajouté avec succès pour l'utilisateur $user"]);
+            } else {
+                echo json_encode(["error" => "Erreur lors de l'ajout du score"]);
+            }
+        } else {
+            echo json_encode(["error" => "Le temps n'a pas été fourni"]);
+        }
+    } else {
+        echo json_encode(["error" => "Aucun utilisateur connecté"]);
+    }
+});
+
+//pg_close($conn);
 Flight::start();
 ?>
 
