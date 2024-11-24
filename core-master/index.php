@@ -7,6 +7,24 @@ require 'flight/Flight.php';
 session_start();
 
 
+$host = 'localhost';      // Hôte où PostgreSQL est installé
+$port = '5432';           // Le port par défaut de PostgreSQL
+$dbname = 'postgres';  // Nom de votre base de données
+$user = 'postgres';    // Nom d'utilisateur PostgreSQL
+$password = 'postgres';  // Mot de passe de l'utilisateur PostgreSQL
+
+// Construire la chaîne de connexion
+$conn_str = "host=$host port=$port dbname=$dbname user=$user password=$password";
+
+// Tenter de se connecter
+$conn = pg_connect($conn_str);
+
+// Vérification de l'état de la connexion
+if (!$conn) {
+    $error = error_get_last();
+    echo "Connection failed. Error was: ".$error['message']. "\n";
+} ;
+
 Flight::route('/jeu', function () {
     Flight::render('jeu');
 });

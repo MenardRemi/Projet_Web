@@ -31,6 +31,16 @@
             <button @click="hideMessage">Fermer</button>
             </div>
 
+
+<!-- Nouveau texte -->  
+        <div id="overlay">
+            <div id="modal">
+                <h2>Ma Fenêtre</h2>
+                <p>Ceci est une fenêtre centrée.</p>
+                <button id="closeBtn">Fermer</button>
+            </div>
+        </div>
+        
         </div>
             
 
@@ -51,6 +61,11 @@
             </ul>
             
         </div>
+
+
+
+
+    </div>
 
         
 
