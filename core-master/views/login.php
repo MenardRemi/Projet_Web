@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <title>login</title>
+  <link rel="stylesheet" href="../assets/login.css">
 <head>
 
 <body>
 
+
+ 
 <?php
 
 if (isset($user['user']) and !empty($user['user'])) {
@@ -18,7 +21,8 @@ if (isset($user['user']) and !empty($user['user'])) {
       } else{
 
 
-    echo '<form action="/login" method="post">
+    echo '<div class="fenetre-login">
+    <form action="/login" method="post">
 
     <fieldset>
     <legend>LOGIN</legend>
@@ -27,13 +31,15 @@ if (isset($user['user']) and !empty($user['user'])) {
     </label></p>
     <input type="submit" value="OK">
 </fieldset>
-</form>';
-
-
+</form>
+</div> 
+';
 
 }
 
 ?>
+
+
     
 </body>
 </html>

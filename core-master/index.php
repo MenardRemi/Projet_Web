@@ -20,10 +20,11 @@ $conn_str = "host=$host port=$port dbname=$dbname user=$user password=$password"
 $conn = pg_connect($conn_str);
 
 // Vérification de l'état de la connexion
+/*
 if (!$conn) {
     $error = error_get_last();
     echo "Connection failed. Error was: ".$error['message']. "\n";
-} ;
+} ; */
 
 Flight::route('/jeu', function () {
     Flight::render('jeu');
