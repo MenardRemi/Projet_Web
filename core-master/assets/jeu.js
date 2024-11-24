@@ -2,6 +2,7 @@ Vue.createApp({
     data() {
         return {
             map: null,
+            geoserverWMS: null,
             objets: [], // Objets récupérés depuis l'API
             markers: [], // Marqueurs associés aux objets
             Inventory: [], // Inventaire des objets récupérés
@@ -19,11 +20,14 @@ Vue.createApp({
             const seconds = String(this.elapsedTime % 60).padStart(2, '0');
             return `${hours}:${minutes}:${seconds}`;
         },
+        afficherText() {
+            return this.selectedItem?.texte;
+        },
     },
     methods: {
         // Initialiser la carte Leaflet
         initMap() {
-            this.map = L.map('map').setView([-22.776993, -43.211614], 9);
+            this.map = L.map('map').setView([48.841335, 2.587347], 11);
             this.featureGroup = L.featureGroup().addTo(this.map);
 
             L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -31,6 +35,16 @@ Vue.createApp({
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> & contributors',
             }).addTo(this.map);
 
+
+            this.geoserverWMS = L.tileLayer.wms("http://localhost:8080/geoserver/jeu_disque/wms", {
+                layers: 'jeu_disque:objets', // Nom du layer défini dans GeoServer
+                format: 'image/png',
+                transparent: true,
+                attribution: "Données via GeoServer",
+                tiled: true, // Active le mode tuiles
+                version: '1.1.1', // Forcer la version qui fonctionne
+            });
+            
 
             this.fetchObjets();
             
@@ -95,6 +109,13 @@ Vue.createApp({
                 console.log("code");
                 this.askForCode(marker, objet);
             }
+            console.log(objet.texte);
+            if (objet.texte) {// si y'a un texte on l'affiche
+                this.selectedItem = objet;
+                this.selectedItem.showText = true;
+                console.log(this.selectedItem.showText);
+
+                };
             //this.checkZoomAndDisplayObjects();
         },
 
@@ -141,6 +162,19 @@ Vue.createApp({
             this.checkZoomAndDisplayObjects();
         },
 
+        showTextBox() {
+            if (this.selectedItem) {
+                return true;
+            } else {
+                return false;
+            };
+
+        },
+
+        hideMessage() {
+            this.selectedItem = null; // Enlever le texte
+        },
+
         // Vérifier le zoom et afficher ou masquer les objets
         checkZoomAndDisplayObjects() {
             const currentZoom = this.map.getZoom();
@@ -169,7 +203,10 @@ Vue.createApp({
             });
             this.Inventory.forEach((image) => {
                 if (image.objet_nom === "disque"){
-                    alert(`Vous avez trouvé le disque ! Temps total : ${this.formattedTime}`);
+                    this.stopChrono();
+                    this.gagne=true;
+                    //alert(`Vous avez trouvé le disque ! Temps total : ${this.formattedTime}`);
+                    this.sendScore();
                 }
             });
         },
@@ -220,10 +257,10 @@ Vue.createApp({
                     // Pièce bien positionné donc disque trouvé !
                     this.unlockObjectOnMap(this.selectedItem);
                     this.removeImageFromInventory(this.selectedItem);
-                    this.stopChrono();
+                    //this.stopChrono();
                     this.checkZoomAndDisplayObjects;
-                    this.gagne=true;
-                    this.sendScore();
+                    //this.gagne=true;
+                    //this.sendScore();
                 } 
             }
         },
@@ -260,6 +297,15 @@ Vue.createApp({
                 }
             })
             .catch(error => console.error('Erreur lors de l\'envoi du score:', error));
+        },
+        changeTriche(){
+            // on décoche triche
+            if (this.map.hasLayer(this.geoserverWMS)) {
+                this.map.removeLayer(this.geoserverWMS);
+            }
+            else{
+                this.geoserverWMS.addTo(this.map);
+            }
         },
     },
     mounted() {

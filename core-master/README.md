@@ -1,4 +1,21 @@
+# A récupérer
+- récupérer les tables "objets" et "score" dans sa BDD
+
+
 # A modifier dans le code
-Dans assets/jeu.js ligne 35 :
-Remplacer fetch('http://localhost:8888/api/objets') par fetch('http://localhost/api/objets')
-dans le geoserver changer le port de connexion à la base de données (en fonction de celui de votre ordinateur)
+Possibilités de sources de problèmes :
+- Présence de fetch('http://localhost:8888/api/objets') (Dans assets/jeu.js ligne 35). Mettre votre port à la place de "8888".
+- Présence de Port_SQL = 5433. Remplacer par le votre.
+
+
+# Règles dans le jeu :
+- Ne pas "passer la ligne de changement de date", c'est à dire, toujours rester sur la carte centrale.
+
+
+# Solution de jeu :
+- Le chronomètre se lance dès l'ouverture de la carte.
+- A l'ENSG, Laura-Lee dit au joueur de se diriger vers l'Islande (où Clara Correia fait son stage). Clara lui indique de chercher une lettre qui se trouve dans un parc proche d'elle.
+- Sur cette lettre il est indiqué d'aller au Québec (dans la ville portant le nom de sa région, soit Québec-city)
+- Sur la carte postale trouvée à Québec, il est écrit le code du coffre présent à Rio de Janeiro (soit 1213). Une indication est donnée par Jules Faguet pour trouver le coffre.
+- Le design de la pièce nous mène vers le mont Fuji, où Romain nous précise comment résoudre la dernière énigme. Il faut glisser la pièce sur la fontaine en haut du mont Fuji.
+- Récupérer le disque entraîne l'arrêt du chronomètre.

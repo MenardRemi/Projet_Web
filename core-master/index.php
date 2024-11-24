@@ -128,13 +128,18 @@ Flight::route('GET /api/objets', function() use ($conn) {
 
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         // Requête pour récupérer l'objet sélectionné
-        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 3857)::geometry) AS longitude, ST_Y(ST_Transform(position, 3857)::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
+        //$sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 3857)::geometry) AS longitude, ST_Y(ST_Transform(position, 3857)::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
+        $sql = "SELECT id, objet_nom, ST_X(coord::geometry) AS longitude, ST_Y(coord::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
+
         //$sql = "SELECT id, objet_nom, ST_X(position) AS longitude, ST_Y(position) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
+        
 
     } else {
         // Requête pour récupérer tous les objets pour commencer le jeu
-        $sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 3857)::geometry) AS longitude, ST_Y(ST_Transform(position, 3857)::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets";
+        //$sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 3857)::geometry) AS longitude, ST_Y(ST_Transform(position, 3857)::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets";
         //$sql = "SELECT id, objet_nom, ST_X(position::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets;"
+        $sql = "SELECT id, objet_nom, ST_X(coord::geometry) AS longitude, ST_Y(coord::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets";
+
 
     }
 
@@ -223,7 +228,7 @@ Flight::route('POST /ajoutscore', function () use ($conn){
             $result = pg_query($conn, $sql);
 
             if ($result) {
-                echo json_encode(["success" => "Score ajouté avec succès pour l'utilisateur $user"]);
+                //echo json_encode(["success" => "Score ajouté avec succès pour l'utilisateur $user"]);
             } else {
                 echo json_encode(["error" => "Erreur lors de l'ajout du score"]);
             }

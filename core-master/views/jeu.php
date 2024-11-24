@@ -13,25 +13,45 @@
 <body>
 
 
-<!-- Titre de la page -->
-<div class="title">La Quête du Disque Volé</div>
+    <div id = 'vue_app' class="app-container">
 
-<div id = 'vue_app' class="app-container">
+        <div id="entete">
+            <!-- Titre de la page -->
+            <div class="chrono-container">
+                {{ formattedTime }}
+            </div>
+            <div class="title">La Quête du Disque Volé</div>
+            <div id="choixTriche">
+                <input type="checkbox" id="triche" name="triche" @click="changeTriche"/>
+                <label for="triche">Triche</label>
+            </div>
+            
 
-    <!-- Chronomètre -->
-        <div class="chrono-container">
-            <h4>Chronomètre</h4>
-            <div id="chrono">{{ formattedTime }}</div>
         </div>
 
         <div class="map-container">
+
             <div id = 'map'
                 @dragover.prevent
                 @drop="Drop($event)">
+                
+                <div class="text-box" v-if="showTextBox">
+                    <p>{{ afficherText}}</p>
+                <button @click="hideMessage">Fermer</button>
+                </div>
             </div> 
-        </div>
 
-        <div class="inventory">
+            
+
+            <div id="victoire" v-if="gagne">
+                <div id="victoireContent">
+                    <h2>Bravo vous avez mis {{ formattedTime }} !</h2>
+                    <p>Rémi va pouvoir mixer ce soir (désolé pour Celia...)</p>
+                    <a href="/accueil" id="closeBtn" class="button">Fermer</a>
+                </div>
+            </div>
+
+            <div class="inventory">
             <h1>Inventaire</h1>
             
             <ul>
@@ -47,11 +67,13 @@
             </ul>
             
         </div>
-    <div id="victoire" v-if="gagne">
-        <h2>Bravo vous avez trouvé le disque !</h2>
-        <a href="/accueil" class="btn btn-primary">Accueil</a>
+        </div>
+
+
+
+
+        
     </div>
-</div>
 
 
 
