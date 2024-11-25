@@ -3,6 +3,7 @@
 - Postgresql : 17
 - Changement PostgresSQL/17/data/pg_hba.conf méthode = md5 au lieu de scram-sha-256 à la fin du fichier
 - Changement PostgresSQL/17/data/postgresql.conf rajouter password_encryption = md5
+- Votre serveur Apache doit pointer vers le dossier "core-master"
 
 # A récupérer
 - récupérer la requete création de la base de données via le fichier data/BDD (méthode 1: importer le fichier via pg_admin ou methode 2: copier directement la requête sur pg_admin)
