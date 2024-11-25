@@ -1,3 +1,9 @@
+# Version/ Paramètre d'initialisation
+- PHP : 7.4.33
+- Postgresql : 17
+- Changement PostgresSQL/17/data/pg_hba.conf méthode = md5 au lieu de scram-sha-256 à la fin du fichier
+- Changement PostgresSQL/17/data/postgresql.conf rajouter password_encryption = md5
+
 # A récupérer
 - récupérer les tables "objets" et "score" dans sa BDD
 
@@ -19,3 +25,4 @@ Possibilités de sources de problèmes :
 - Sur la carte postale trouvée à Québec, il est écrit le code du coffre présent à Rio de Janeiro (soit 1213). Ne pas hésiter à cliquer sur l'objet pour mieux voir le code. Une indication est donnée par Jules Faguet pour trouver le coffre.
 - Le design de la pièce nous mène vers le mont Fuji, où Romain nous précise comment résoudre la dernière énigme. Il faut glisser la pièce sur la fontaine en haut du mont Fuji.
 - Récupérer le disque entraîne l'arrêt du chronomètre.
+
