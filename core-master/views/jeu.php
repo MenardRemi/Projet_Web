@@ -12,7 +12,6 @@
 </head>
 <body>
 
-
     <div id = 'vue_app' class="app-container">
 
         <div id="entete">
@@ -25,8 +24,6 @@
                 <input type="checkbox" id="triche" name="triche" @click="changeTriche"/>
                 <label for="triche">Triche</label>
             </div>
-            
-
         </div>
 
         <div class="map-container">
@@ -34,14 +31,12 @@
             <div id = 'map'
                 @dragover.prevent
                 @drop="Drop($event)">
-                
+
                 <div class="text-box" v-if="showTextBox">
                     <p>{{ afficherText}}</p>
                 <button @click="hideMessage">Fermer</button>
                 </div>
             </div> 
-
-            
 
             <div id="victoire" v-if="gagne">
                 <div id="victoireContent">
@@ -53,7 +48,6 @@
 
             <div class="inventory">
             <h1>Inventaire</h1>
-            
             <ul>
                 <li v-for="(image, index) in Inventory" :key="index">
                     <img 
@@ -67,16 +61,10 @@
             </ul>
             
         </div>
-        </div>
-
-
-
-
-        
+        </div>  
     </div>
-
-
 
 </body>
 <script src="../assets/jeu.js"></script>
+
 </html>

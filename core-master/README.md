@@ -14,6 +14,7 @@ Possibilités de sources de problèmes :
 - Présence de Port_SQL = 5433. Remplacer par le votre.
 
 # Règles dans le jeu :
+- Pour commencer à jouer : mettre "localhost/accueil" dans un navigateur de recherche
 - Ne pas "passer la ligne de changement de date", c'est à dire, toujours rester sur la carte centrale.
 
 # Solution de jeu :

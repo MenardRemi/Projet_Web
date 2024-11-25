@@ -1,33 +1,39 @@
 Vue.createApp({
     data() {
         return {
-            map: null,
-            geoserverWMS: null,
+            map: null, // carte
+            geoserverWMS: null, // couche WMS
             objets: [], // Objets récupérés depuis l'API
             markers: [], // Marqueurs associés aux objets
             Inventory: [], // Inventaire des objets récupérés
             selectedItem: null, // Élément sélectionné dans l'inventaire
-            timer: null, // Référence au setInterval
+            timer: null, // timer
             elapsedTime: 0, // Temps écoulé en secondes
             gagne:false,
         };
     },
     computed: {
-        // Formater le temps écoulé en HH:MM:SS
+        // Formate le temps écoulé en HH:MM:SS
         formattedTime() {
             const hours = String(Math.floor(this.elapsedTime / 3600)).padStart(2, '0');
             const minutes = String(Math.floor((this.elapsedTime % 3600) / 60)).padStart(2, '0');
             const seconds = String(this.elapsedTime % 60).padStart(2, '0');
             return `${hours}:${minutes}:${seconds}`;
         },
+        // Affiche le texte
         afficherText() {
             return this.selectedItem?.texte;
         },
     },
     methods: {
-        // Initialiser la carte Leaflet
+
+
+        /* INTIALISATION DU JEU */
+
+
+        // Initialise la carte Leaflet et la couche WMS
         initMap() {
-            this.map = L.map('map').setView([48.841335, 2.587347], 11);
+            this.map = L.map('map').setView([48.841335, 2.587347], 4);
             this.featureGroup = L.featureGroup().addTo(this.map);
 
             L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
@@ -35,34 +41,27 @@ Vue.createApp({
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> & contributors',
             }).addTo(this.map);
 
-
             this.geoserverWMS = L.tileLayer.wms("http://localhost:8080/geoserver/jeu_disque/wms", {
-                layers: 'jeu_disque:objets', // Nom du layer défini dans GeoServer
+                layers: 'jeu_disque:objets',
                 format: 'image/png',
                 transparent: true,
                 attribution: "Données via GeoServer",
-                tiled: true, // Active le mode tuiles
-                version: '1.1.1', // Forcer la version qui fonctionne
+                tiled: true,
+                version: '1.1.1',
             });
-            
 
+            // Appelle les objets
             this.fetchObjets();
             
-
-            // Gérer l'affichage des icônes à chaque changement de zoom
+            // Gère l'affichage des icônes à chaque changement de zoom
             this.map.on('zoomend', this.checkZoomAndDisplayObjects);
-
-            /*this.map.on('error', (event) => {
-                console.error("Erreur Leaflet détectée :", event.error);
-            });*/
         },
 
-        // Récupérer les objets depuis l'API
+        // Récupère les objets depuis l'API
         fetchObjets() {
             fetch('http://localhost:8888/api/objets')
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     this.objets = data;
                     this.createMarkers(); // Crée les marqueurs pour les objets
                     this.checkZoomAndDisplayObjects(); // Vérifie le zoom initial
@@ -70,81 +69,78 @@ Vue.createApp({
                 .catch(error => console.error("Erreur lors de la récupération des objets:", error));
         },
 
-        // Créer des marqueurs pour chaque objet
+        // Crée des marqueurs pour chaque objet
         createMarkers() {
             this.objets.forEach(objet => {
-                console.log("Objet à traiter :", objet); // Débogage
-                if (objet.icone && objet.latitude && objet.longitude) {
+                if (objet.icone && objet.latitude && objet.longitude) { // si l'objet a bien les propriétés nécessaires à sa création
+                    // Création de l'objet icône
                     const icon = L.icon({
                         iconUrl: objet.icone,
                         iconSize: [50, 50],
                         iconAnchor: [25, 50],
                         popupAnchor: [0, -50],
                     });
+                    // Création du marqueur
                     const marker = L.marker([objet.latitude, objet.longitude], { icon }); //{ keepInView: true }
                     
-                    
-                    console.log(`Marqueur créé pour : ${objet.texte}`);
+                    // Ajout du marqueur avec
+                    this.markers.push({ marker, objet }); // Associe le marqueur à l'objet
 
-                    this.markers.push({ marker, image: objet }); // Associe le marqueur à l'objet
-
-                    marker.on('click', () => this.onMarkerClick(marker, objet));
+                    // Si le marqueur est cliqué alors on le gère
+                    marker.on('click', () => this.onMarkerClick(objet));
                 }
             });
         },
 
+
+        /* GESTION DU CLIC SUR UN OBJET */
+
+
         // Gérer le clic sur un marqueur
-        onMarkerClick(marker, objet) {
-            console.log(objet.recuperable);
-            console.log(objet.objet_nom);
-            if (objet.recuperable == "t" && objet.remove == "f") {
-                console.log("laaaaa");
+        onMarkerClick(objet) {
+            if (objet.recuperable == "t" && objet.remove == "f") { // Si l'objet est récupérable et qu'il n'est pas retiré de la carte
+                // Ajout à l'inventaire
                 this.addImageToInventory(objet);
-                //this.map.removeLayer(marker); // Retirer l'icône de la carte
-                //this.featureGroup.removeLayer(marker);
             }
 
-            if (objet.code) {
-                
-                console.log("code");
-                this.askForCode(marker, objet);
+            if (objet.code) { // Si l'objet dispose d'un dispositif de code
+                // Demande au joueur de rentrer un code
+                this.askForCode(objet);
             }
-            console.log(objet.texte);
-            if (objet.texte) {// si y'a un texte on l'affiche
+
+            if (objet.texte) {// si l'objet a un texte on l'affiche
                 this.selectedItem = objet;
                 this.selectedItem.showText = true;
-                console.log(this.selectedItem.showText);
-
-                };
-            //this.checkZoomAndDisplayObjects();
+            };
         },
 
-        // Ajouter un objet à l'inventaire
-        addImageToInventory(image) {
-            this.Inventory.push(image);
-            image.remove = "t"; // Marque l'objet comme supprimé
-            if (image.objet_nom != "piece"){
-                this.unlockObjectOnMap(image); // Débloque les objets liés
+        // Ajoute un objet à l'inventaire
+        addImageToInventory(objet) {
+            this.Inventory.push(objet);
+            objet.remove = "t"; // Marque l'objet comme supprimé
+            if (objet.objet_nom != "piece"){ 
+                this.unlockObjectOnMap(objet); // Débloque les objets liés
             }
             else{
                 this.checkZoomAndDisplayObjects();
             }
         },
 
-        // Retirer un objet de l'inventaire
-        removeImageFromInventory(image) {
-            const index = this.Inventory.indexOf(image);
+        // Retire un objet de l'inventaire
+        removeImageFromInventory(objet) {
+            // Récupère l'index de l'objet dans l'inventaire
+            const index = this.Inventory.indexOf(objet);
             if (index !== -1) {
                 this.Inventory.splice(index, 1);
             }
+            // MAJ de l'affichage des objets
             this.checkZoomAndDisplayObjects();
         },
 
-        // Demander un code pour débloquer un objet
-        askForCode(marker, objet) {
+        // Demande un code pour débloquer un objet
+        askForCode(objet) {
             const code = prompt("Entrez un code à 4 chiffres");
-            if (code && code === objet.code) {
-                //this.map.removeLayer(marker);
+            if (code && code === objet.code) { // Code bon
                 objet.remove = "t"; // on retire le coffre fermé de la carte
                 this.unlockObjectOnMap(objet);
             } else {
@@ -152,16 +148,95 @@ Vue.createApp({
             }
         },
 
-        // Débloquer un objet sur la carte
-        unlockObjectOnMap(image) {
-            const ObjetsBloques = this.objets.filter(obj => obj.bloque === image.id);
+        // Débloque un objet sur la carte
+        unlockObjectOnMap(objet) {
+            const ObjetsBloques = this.objets.filter(obj => obj.bloque === objet.id);
             ObjetsBloques.forEach(bloque => {
-                console.log("bloqueeeeeeeee", image.id);
                 bloque.remove = "f";
             })
+            // MAJ de l'affichage des objets
             this.checkZoomAndDisplayObjects();
         },
 
+        // Sélectionner un objet dans l'inventaire
+        selectItem(item) {
+            this.selectedItem = item;
+        },
+
+        // Gérer le dépôt d'un objet de l'inventaire sur la carte
+        Drop(event) {
+            const dropX = event.clientX;
+            const dropY = event.clientY;
+
+            // Recherche de l'objet bloqué par l'objet sélectionné
+            const targetImage = this.objets.find(objet => objet.bloque === this.selectedItem.id);
+            if (targetImage) {
+                const targetPoint = this.map.latLngToContainerPoint(
+                    L.latLng(targetImage.latitude, targetImage.longitude)
+                );
+
+                // Rayon de tolérance de glisse
+                const tolerance = 300;
+                if (
+                    dropX >= targetPoint.x - tolerance &&
+                    dropX <= targetPoint.x + tolerance &&
+                    dropY >= targetPoint.y - tolerance &&
+                    dropY <= targetPoint.y + tolerance
+                ) {
+                    // Pièce bien positionné donc disque trouvé !
+                    this.unlockObjectOnMap(this.selectedItem);
+                    this.removeImageFromInventory(this.selectedItem);
+                    this.checkZoomAndDisplayObjects;
+                } 
+            }
+        },
+
+
+        /* GESTION DE L'AFFICHAGE DYNAMMIQUE */
+
+
+        // Vérifie le zoom et affiche ou masque les objets
+        checkZoomAndDisplayObjects() {
+            // Récupère le niveau de zoom actuel
+            const currentZoom = this.map.getZoom();
+
+            // Boucle sur les marqueurs
+            this.markers.forEach(({ marker, objet }) => {
+                if (marker && objet){ // Si on a bien une valeur pour le marqueur et l'objet
+                    
+                    // Bon niveau de zoom et objet non supprimé de la carte
+                    if (currentZoom >= objet.zoom && objet.remove == "f") { 
+                        
+                        // N'est pas présent sur la carte
+                        if (!this.featureGroup.hasLayer(marker)) { 
+                            // On l'ajoute
+                            this.featureGroup.addLayer(marker);
+                        }
+                    } 
+
+                    // Pas le bon niveau de zoom ou à supprimer de la carte
+                    else { 
+
+                        // Est présent sur la carte
+                        if (this.featureGroup.hasLayer(marker)) { 
+                            // On le retire
+                            this.featureGroup.removeLayer(marker);
+                        }
+                    }
+                }
+            });
+
+            // On parcourt l'inventaire pour repérer le disque
+            this.Inventory.forEach((objet) => {
+                if (objet.objet_nom === "disque"){
+                    this.stopChrono();
+                    this.gagne=true;
+                    this.sendScore();
+                }
+            });
+        },
+
+        // Affiche la boîte de texte de l'objet sélectionné
         showTextBox() {
             if (this.selectedItem) {
                 return true;
@@ -171,47 +246,12 @@ Vue.createApp({
 
         },
 
+        // Retire la boîte de texte de l'objet sélectionné
         hideMessage() {
             this.selectedItem = null; // Enlever le texte
         },
 
-        // Vérifier le zoom et afficher ou masquer les objets
-        checkZoomAndDisplayObjects() {
-            const currentZoom = this.map.getZoom();
-            //const currentZoom = this.featureGroup.getZoom();
-
-            this.markers.forEach(({ marker, image }) => {
-                //console.log("valeur remove :", image.remove);
-                if (marker && image){
-                    if (currentZoom >= image.zoom && image.remove == "f") { // Bon niveau de zoom + pas supprimé de la carte
-                        //marker.addTo(this.featureGroup);
-                        if (!this.featureGroup.hasLayer(marker)) {
-                            //console.log(`Ajout du marqueur pour : ${image.objet_nom}`);
-                            this.featureGroup.addLayer(marker);
-                            //this.featureGroup.addLayer(marker);
-                        }
-                    } else { // pas bon niveau de zoom ou à supprimer de la carte
-                        //console.log("zoom pas ok ou à supp de la carte");
-                        if (this.featureGroup.hasLayer(marker)) {
-                            //console.log(`Retrait du marqueur pour : ${image.objet_nom}`);
-                            //marker.remove(this.featureGroup);
-                            this.featureGroup.removeLayer(marker);
-                            //this.featureGroup.removeLayer(marker);
-                        }
-                    }
-                }
-            });
-            this.Inventory.forEach((image) => {
-                if (image.objet_nom === "disque"){
-                    this.stopChrono();
-                    this.gagne=true;
-                    //alert(`Vous avez trouvé le disque ! Temps total : ${this.formattedTime}`);
-                    this.sendScore();
-                }
-            });
-        },
-
-        // Ouvrir une fenêtre avec une image en grand
+        // Ouvrir une fenêtre avec une image en grand, pour mieux voir les objets
         openWindow(imageSrc) {
             const newWindow = window.open('', '_blank', 'width=800,height=600');
             newWindow.document.write(`
@@ -224,46 +264,21 @@ Vue.createApp({
             `);
         },
 
-        // Sélectionner un objet dans l'inventaire
-        selectItem(item) {
-            this.selectedItem = item;
-        },
-
-        // Gérer le dépôt d'un objet sur la carte
-        Drop(event) {
-            const dropX = event.clientX;
-            const dropY = event.clientY;
-
-            const targetImage = this.objets.find(image => image.bloque === this.selectedItem.id);
-            console.log(targetImage);
-            if (targetImage) {
-                const targetPoint = this.map.latLngToContainerPoint(
-                    L.latLng(targetImage.latitude, targetImage.longitude)
-                );
-
-                const tolerance = 300;
-                console.log((
-                    dropX >= targetPoint.x - tolerance &&
-                    dropX <= targetPoint.x + tolerance &&
-                    dropY >= targetPoint.y - tolerance &&
-                    dropY <= targetPoint.y + tolerance
-                ));
-                if (
-                    dropX >= targetPoint.x - tolerance &&
-                    dropX <= targetPoint.x + tolerance &&
-                    dropY >= targetPoint.y - tolerance &&
-                    dropY <= targetPoint.y + tolerance
-                ) {
-                    // Pièce bien positionné donc disque trouvé !
-                    this.unlockObjectOnMap(this.selectedItem);
-                    this.removeImageFromInventory(this.selectedItem);
-                    //this.stopChrono();
-                    this.checkZoomAndDisplayObjects;
-                    //this.gagne=true;
-                    //this.sendScore();
-                } 
+        // Change la valeur de la triche
+        changeTriche(){
+            // Si la triche est activée on la retire
+            if (this.map.hasLayer(this.geoserverWMS)) {
+                this.map.removeLayer(this.geoserverWMS);
+            }
+            else{ // Sinon on l'ajoute
+                this.geoserverWMS.addTo(this.map);
             }
         },
+
+
+        /* GESTION DU CHRONOMETRE */
+        
+
         // Initialiser le chronomètre
         startChrono() {
             if (!this.timer) {
@@ -272,12 +287,15 @@ Vue.createApp({
                 }, 1000);
             }
         },
+
         // Arrêter le chronomètre
         stopChrono() {
             clearInterval(this.timer);
-            //appel fonction pour ajouter le timeur au tableur score
-            this.timer = null;
+            this.timer = null; // Retour du tableau à 0
         },
+
+        // Requête pour envoyer le score à la base de données
+        // Méthode POST pour éviter que le joueur puisse tricher
         sendScore() {
             fetch('http://localhost:8888/ajoutscore', {
                 method: 'POST',
@@ -285,7 +303,7 @@ Vue.createApp({
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
                 body: new URLSearchParams({
-                    temps: this.formattedTime, // Temps à envoyer
+                    temps: this.formattedTime, // Temps arrêté envoyé
                 }),
             })
             .then(response => response.json())
@@ -297,15 +315,6 @@ Vue.createApp({
                 }
             })
             .catch(error => console.error('Erreur lors de l\'envoi du score:', error));
-        },
-        changeTriche(){
-            // on décoche triche
-            if (this.map.hasLayer(this.geoserverWMS)) {
-                this.map.removeLayer(this.geoserverWMS);
-            }
-            else{
-                this.geoserverWMS.addTo(this.map);
-            }
         },
     },
     mounted() {

@@ -1,144 +1,130 @@
-ul {
-    list-style-type: none; /* Supprimer les points devant les éléments de la liste */
-  }
-  
-#map { 
-        width: 100%;
-        height: 100%;
-}
-
 body {
-    
-    /*display: flex;
-    flex-direction: column;
-    align-items: center;*/
     margin: 0;
     font-family: Arial, sans-serif;
     background-color: #9c9700;
     color: white; /* Texte en blanc pour visibilité */
-
 }
+
+ul {
+    list-style-type: none;
+  }
   
-/* Titre */
+#map { 
+    width: 100%;
+    height: 100%;
+}
+
 .title {
     font-size: 2rem;
     margin-top: 20px;
     text-align: center;
     font-weight: bold;
     color: #ffffff;
-    }
+}
 
 /* Conteneur de la carte */
 .map-container {
-        position: relative;
-        display: flex;
-
-        margin-top: 10px;
-        /*overflow: hidden;*/
-        height: calc(100vh - 100px);
-        }
+    position: relative;
+    display: flex;
+    margin-top: 10px;
+    height: calc(100vh - 100px);
+}
 
 /* Conteneur principal pour la carte et l'inventaire */
-    .app-container {
-        display: grid;
-        grid-template-rows: 80px 1fr;
-
-        /*justify-content: center;*/
-        margin-inline: 15px;
-        align-items: stretch; /* Aligne les éléments à la même hauteur */
-        /*height: calc(100vh - 100px);*/
-
-        }
+.app-container {
+    display: grid;
+    grid-template-rows: 80px 1fr;
+    margin-inline: 15px;
+    align-items: stretch;
+}
 
 /* Styles pour la section de l’inventaire */
-    .inventory {
-            max-width: 250px; /* Limite de largeur maximale */
-            min-width: 200px; /* Limite de largeur minimale */
-            background-color: #9c9700;
-            color: #ffffff;
-            height: 100%; /* Pour correspondre à la hauteur de la carte */
-            display: flex;
-            flex-direction: column;
-            align-items: center; /* Centre les éléments dans l'inventaire */
-            overflow-y: auto;
-        }
+.inventory {
+    max-width: 250px;
+    min-width: 200px;
+    background-color: #9c9700;
+    color: #ffffff;
+    height: 100%; /* Pour correspondre à la hauteur de la carte */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-y: auto;
+}
 
-    .inventory-image {
-        max-width: 90%; /* L'image prendra 90% de la largeur de l'inventaire */
-        max-height: 90%; /* Limite également la hauteur */
-        height: auto; /* Maintient les proportions de l'image */
-        object-fit: contain;
-        margin: 10px;
-    }
+.inventory-image {
+    max-width: 90%;
+    max-height: 90%;
+    height: auto;
+    object-fit: contain;
+    margin: 10px;
+}
 
-    .chrono-container {
-        margin-top: 20px;
-        text-align: center;
-        font-size: 1.5em;
-    }
+.chrono-container {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 1.5em;
+}
 
-
-
-    .text-box {
-        position: absolute;
-        bottom: 0;
-        width: 100%;
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        padding: 15px;
-        z-index: 1000;
-      }
+.text-box {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 15px;
+    z-index: 1000;
+}
       
-    .text-box button {
-        background-color: #000000;
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        cursor: pointer;
-        margin-top: 10px;
-      }
+.text-box button {
+    background-color: #000000;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    margin-top: 10px;
+}
 
-      #victoire {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100vw;
-        height: 100vh;
-        background-color: rgba(0, 0, 0, 0.5);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 9999;
-      }
-      
-      #victoireContent {
-        background: #fff;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        text-align: center;
-        width: 300px;
-        max-width: 90%;
-        z-index: 1000;
-        color: black;
-      }
-      
-      #closeBtn {
-        margin-top: 10px;
-        padding: 8px 12px;
-        background-color: #d4c21ee5;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-      }
-      
-      #closeBtn:hover {
-        background-color: #04632bce;
-      }
-      #entete{
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
+#victoire {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#victoireContent {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    width: 300px;
+    max-width: 90%;
+    z-index: 1000;
+    color: black;
+}
+
+#closeBtn {
+    margin-top: 10px;
+    padding: 8px 12px;
+    background-color: #d4c21ee5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#closeBtn:hover {
+    background-color: #04632bce;
+}
+#entete{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
 

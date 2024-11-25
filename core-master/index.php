@@ -27,6 +27,7 @@ session_start();
 Flight::set('conn', $conn);
 
 
+// Route vers la page d'accueil
 Flight::route('GET /accueil', function() use ($conn) {
         // Requête pour récupérer les 10 meilleurs scores
         $sql = "SELECT nom, temps FROM score ORDER BY temps LIMIT 10";
@@ -43,60 +44,49 @@ Flight::route('GET /accueil', function() use ($conn) {
     }
 );
 
-// Route menant 
+
+// Route vers la page de jeu 
 Flight::route('GET /map', function() {
     Flight::render('jeu');
 });
 
 
+// Route permettant de récupérer les objets choisis de la base de données
 Flight::route('GET /api/objets', function() use ($conn) {
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         // Requête pour récupérer l'objet sélectionné
-        //$sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 3857)::geometry) AS longitude, ST_Y(ST_Transform(position, 3857)::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
-        $sql = "SELECT id, objet_nom, ST_X(coord::geometry) AS longitude, ST_Y(coord::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
-
-        //$sql = "SELECT id, objet_nom, ST_X(position) AS longitude, ST_Y(position) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);
-        
-
+        $sql = "SELECT id, objet_nom, ST_X(coord::geometry) AS longitude, ST_Y(coord::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets WHERE id=" . pg_escape_string($_GET['id']);        
     } else {
         // Requête pour récupérer tous les objets pour commencer le jeu
-        //$sql = "SELECT id, objet_nom, ST_X(ST_Transform(position, 3857)::geometry) AS longitude, ST_Y(ST_Transform(position, 3857)::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets";
-        //$sql = "SELECT id, objet_nom, ST_X(position::geometry) AS longitude, ST_Y(position::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets;"
         $sql = "SELECT id, objet_nom, ST_X(coord::geometry) AS longitude, ST_Y(coord::geometry) AS latitude, zoom, icone, bloque, texte, code, remove, recuperable FROM objets";
-
-
     }
 
     // Exécution de la requête
     $result = pg_query($conn, $sql);
 
-    if ($result) {
+    if ($result) { // Requête fonctionnelle
         // Conversion des résultats en format JSON
         $objets = [];
         while ($row = pg_fetch_assoc($result)) {
-
             $objets[] = $row;
         }
         //Transmission des données JSON
-        echo json_encode($objets);
-        $objets = json_encode($objets);
-        
+        echo json_encode($objets);        
 
     } else {
         echo json_encode(["error" => "Erreur lors de la récupération des données"]);
     }
-
-    
-
-
 });
 
 
+// Route vers la page de login
 Flight::route('GET /login', function () {
     Flight::render('login', ['user' => $_SESSION]);
 
 });
 
+
+// Route vers le jeu si l'utilisateur est rentré
 Flight::route('POST /login', function () {
     if (isset($_POST['user']) and !empty($_POST['user'])) {
         $_SESSION['user'] = $_POST['user'];
@@ -106,54 +96,46 @@ Flight::route('POST /login', function () {
         }
 });
 
+
+// Route de déconnexion vers la page de login
 Flight::route('/logout', function () {
     $_SESSION = [];
     Flight::render('login', ['user' => $_SESSION]);
 
 });
 
-Flight::route('POST /ajoutscore', function () use ($conn){
 
+// Route permettant d'ajouter le score à la base de données
+Flight::route('POST /ajoutscore', function () use ($conn){
     if (!$conn) {
         echo json_encode(["error" => "Erreur de connexion à la base de données"]);
         return;
     }
-    /*if (isset($_POST['user']) and !empty($_POST['user'])) {
-        if (isset($_POST['temps']) and !empty($_POST['temps'])) {
-            $sql = "INSERT INTO score (nom, temps) VALUES ($_POST['user'], $_POST['temps']);";
-        }
-    
-    }
-    // Exécution de la requête
-    $result = pg_query($conn, $sql);
-    if (!$result){
-        echo "erreur lors de l'ajout du chrono du joueur $_POST['user']";
-    }*/
 
-    // Vérifier si un utilisateur est connecté
+    // Vérifie si un utilisateur est connecté
     if (isset($_SESSION['user']) && !empty($_SESSION['user'])) {
+        
+        // Échappement pour protéger contre les injections SQL
         $user = pg_escape_string($conn, $_SESSION['user']);
 
         // Vérifier si le temps est fourni
         if (isset($_POST['temps']) && !empty($_POST['temps'])) {
             $temps = isset($_POST['temps']) ? $_POST['temps'] : null;
 
-            // Valider le format du temps (HH:MM:SS)
+            // Vérifie la validité du format de temps (HH:MM:SS)
             if ($_POST['temps'] === null || !preg_match('/^(?:[01]\d|2[0-3]):[0-5]\d:[0-5]\d$/', $temps)) {
                 echo json_encode(["error" => "Format de temps invalide. Utilisez HH:MM:SS."]);
                 return;
             }
 
-            // Échappement pour protéger contre les injections SQL
+            // Protection contre les injonctions SQL
             $temps = pg_escape_string($conn, $_POST['temps']);
             
-            // Préparer et exécuter la requête d'insertion
+            // Préparation et exécution de la requête d'insertion
             $sql = "INSERT INTO score (nom, temps) VALUES ('$user', '$temps')";
             $result = pg_query($conn, $sql);
 
-            if ($result) {
-                //echo json_encode(["success" => "Score ajouté avec succès pour l'utilisateur $user"]);
-            } else {
+            if (!$result) {
                 echo json_encode(["error" => "Erreur lors de l'ajout du score"]);
             }
         } else {
@@ -164,7 +146,6 @@ Flight::route('POST /ajoutscore', function () use ($conn){
     }
 });
 
-//pg_close($conn);
 Flight::start();
 ?>
 
