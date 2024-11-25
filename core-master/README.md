@@ -5,18 +5,17 @@
 - Changement PostgresSQL/17/data/postgresql.conf rajouter password_encryption = md5
 
 # A récupérer
-- récupérer les tables "objets" et "score" dans sa BDD
-
+- récupérer la requete création de table data/creation_tables.txt pour créer les tables sur pg_admin
+- récupérer le csv des tables "objets" et "score" dans data/objets.csv pour rajouter remplir les colonnes des tables sql
+- récupérer les données géoservers dans le dossier data/jeu_disque racine du workspace du géoserver
 
 # A modifier dans le code
 Possibilités de sources de problèmes :
 - Présence de fetch('http://localhost:8888/api/objets') (Dans assets/jeu.js ligne 35). Mettre votre port à la place de "8888".
 - Présence de Port_SQL = 5433. Remplacer par le votre.
 
-
 # Règles dans le jeu :
 - Ne pas "passer la ligne de changement de date", c'est à dire, toujours rester sur la carte centrale.
-
 
 # Solution de jeu :
 - Le chronomètre se lance dès l'ouverture de la carte.
