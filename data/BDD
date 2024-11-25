@@ -1,0 +1,154 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 17.0
+-- Dumped by pg_dump version 17.0
+
+-- Started on 2024-11-25 19:37:48 CET
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET transaction_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 2 (class 3079 OID 17474)
+-- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
+--
+
+CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
+
+
+--
+-- TOC entry 4528 (class 0 OID 0)
+-- Dependencies: 2
+-- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner: 
+--
+
+COMMENT ON EXTENSION postgis IS 'PostGIS geometry and geography spatial types and functions';
+
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 224 (class 1259 OID 18593)
+-- Name: objets; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.objets (
+    id integer NOT NULL,
+    objet_nom character varying(255),
+    zoom integer,
+    icone character varying(255),
+    bloque integer,
+    texte text,
+    code character varying(255),
+    recuperable boolean,
+    remove boolean,
+    coord public.geometry(Point,4326),
+    showtext boolean DEFAULT false
+);
+
+
+ALTER TABLE public.objets OWNER TO postgres;
+
+--
+-- TOC entry 223 (class 1259 OID 18566)
+-- Name: score; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.score (
+    nom character varying(50),
+    temps time without time zone
+);
+
+
+ALTER TABLE public.score OWNER TO postgres;
+
+--
+-- TOC entry 4522 (class 0 OID 18593)
+-- Dependencies: 224
+-- Data for Name: objets; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.objets VALUES (14, 'carte postale', 8, 'image/carte_postale.png', 0, '', '', true, false, '0101000020E610000057056A3178CD51C0B27F9E060C684740', false);
+INSERT INTO public.objets VALUES (16, 'Romain', 6, 'image/romain.jpg', 0, 'Kon''nichiwa !
+Bienvenue au pays du soleil levant.
+Je viens de descendre de ma prière en haut du mon Fuji où tous tes voeux deviennent réalité.
+Si t''as des volontés n''hésite pas, ça marche à chaque fois ! T''as juste à lancer une pièce dans la fontaine', '', false, false, '0101000020E6100000957D57047F556140978FA4A487A34140', false);
+INSERT INTO public.objets VALUES (4, 'Remi', 4, 'image/remi.jpg', 0, 'Oh non la soirée est dans 10 minutes et je ne trouve plus mon disque avec tout mon DJ set dessus,
+Tu dois m’aider à retrouver ce disque ! Ma future vie de DJ en dépend… 
+PS : Peut-être que mes amis de l''ENSG peuvent m''aider
+', '', false, false, '0101000020E6100000CD3AE3FBE2B2044076FD82DDB06B4840', false);
+INSERT INTO public.objets VALUES (11, 'canette', 13, 'image/canettes.png', 0, '', '', false, false, '0101000020E6100000462234828DEB35C08F006E162F085040', false);
+INSERT INTO public.objets VALUES (13, 'dechets', 13, 'image/dechets.png', 0, '', '', false, false, '0101000020E6100000EBE2361AC0EB35C0E04A766C04085040', false);
+INSERT INTO public.objets VALUES (17, 'statue', 15, 'image/fontaine_mont_fuji.png', 0, '', '', false, false, '0101000020E61000003468E89F6057614025CE8AA889AE4140', false);
+INSERT INTO public.objets VALUES (18, 'disque', 6, 'image/disque.png', 3, '', '', true, true, '0101000020E61000003468E89F6057614025CE8AA889AE4140', false);
+INSERT INTO public.objets VALUES (8, 'Seb', 6, 'image/seb.jpg', 0, 'J’ai vu Karine quitter l’école avec un objet doré dans son sac...', '', false, false, '0101000020E6100000AC70CB4752B204407CBABA63B16B4840', false);
+INSERT INTO public.objets VALUES (10, 'Clara', 6, 'image/clara.png', 0, 'Góðan daginn !
+T''as vu la dernière éruption ? C''était fou...
+Ah pardon tu n''es pas là pour ça ?Karine m’a confié une lettre très importante, et je l’ai perdue ! Je suis sûre qu’elle est encore ici, quelque part près du parc. Si vous trouvez cette lettre, ce serait une aide précieuse pour vous je pense.', '', false, false, '0101000020E61000000D18247D5AF135C00A80F10C1A095040', false);
+INSERT INTO public.objets VALUES (7, 'Laura-lee', 6, 'image/laura-lee.jpg', 0, 'Je sais pas pourquoi mais ces derniers jours Karine n’arrêtait pas de me parler d’un voyage vers la terre de glace et de feu', '', false, false, '0101000020E61000000B42791F47B30440591822A7AF6B4840', false);
+INSERT INTO public.objets VALUES (2, 'coffre_ouvert', 6, 'image/coffre_ouvert.png', 1, '', '', false, true, '0101000020E6100000A0A696ADF58F45C0F12F82C64CB636C0', false);
+INSERT INTO public.objets VALUES (3, 'piece', 6, 'image/piece.png', 1, '', '', true, true, '0101000020E6100000A0A696ADF58F45C0F12F82C64CB636C0', false);
+INSERT INTO public.objets VALUES (15, 'Jules', 6, 'image/jules.jpg', 0, 'Bom dia !
+Je me suis baladé dans la grande baie à la recherche d''un spot pour prendre des photos et j''ai trouvé un petit coffre à code mais pas moyen de mettre la main sur ce code... ', '', false, false, '0101000020E6100000B1A71DFE9A9A45C0EB3A545392E936C0', false);
+INSERT INTO public.objets VALUES (9, 'Celia', 6, 'image/celia.jpg', 0, 'Les soirées ENSG sont incroyables sauf quand Rémi mixe (donc pitié ne retrouve pas son disque)', '', false, false, '0101000020E6100000F4C1323674B304403997E2AAB26B4840', false);
+INSERT INTO public.objets VALUES (1, 'coffre ferme', 14, 'image/coffre_ferme.png', 0, '', '1213', false, false, '0101000020E6100000A0A696ADF58F45C0F12F82C64CB636C0', false);
+INSERT INTO public.objets VALUES (12, 'lettre', 15, 'image/lettre.png', 0, '
+À l''est des montagnes et au bord de la mer,
+Se trouve une ville où le sirop d''érable est fier.
+Cherche le plus vieux quartier, pavé et charmant,
+Là-bas, une boutique te dévoilera un trésor brillant.
+La carte postale attend sous le signe d''un castor,
+Un symbole canadien, tout près de son store.
+Et si tu cherches bien, une coïncidence se dévoile,
+Car ton nom est le même que la région où tu travailles.
+Trouve cette ville historique, où l''hiver est festif,
+Et tu découvriras une carte postale, en souvenir d''un récit !
+
+', '', false, false, '0101000020E6100000AF25E4839EE935C0E7FD7F9C30085040', false);
+
+
+--
+-- TOC entry 4521 (class 0 OID 18566)
+-- Dependencies: 223
+-- Data for Name: score; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO public.score VALUES ('test_validation', '00:00:26');
+
+
+--
+-- TOC entry 4364 (class 0 OID 17792)
+-- Dependencies: 219
+-- Data for Name: spatial_ref_sys; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- TOC entry 4370 (class 2606 OID 18599)
+-- Name: objets objets_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.objets
+    ADD CONSTRAINT objets_pkey PRIMARY KEY (id);
+
+
+-- Completed on 2024-11-25 19:37:48 CET
+
+--
+-- PostgreSQL database dump complete
+--
+
