@@ -5,8 +5,7 @@
 - Changement PostgresSQL/17/data/postgresql.conf rajouter password_encryption = md5
 
 # A récupérer
-- récupérer la requete création de table data/creation_tables.txt pour créer les tables sur pg_admin
-- récupérer le csv des tables "objets" et "score" dans data/objets.csv pour rajouter remplir les colonnes des tables sql
+- récupérer la requete création de la base de données via le fichier data/BDD (méthode 1: importer le fichier via pg_admin ou methode 2: copier directement la requête sur pg_admin)
 - récupérer les données géoservers dans le dossier data/jeu_disque racine du workspace du géoserver
 
 # A modifier dans le code
